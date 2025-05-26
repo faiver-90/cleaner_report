@@ -13,17 +13,17 @@ RUN pip install poetry
 ENV POETRY_NO_INTERACTION=1
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
-ENV PYTHONPATH=/app/src
+ENV PYTHONPATH=/app
 
 # Отключаем создание .venv
 RUN poetry config virtualenvs.create false
 
 # Устанавливаем рабочую директорию
 WORKDIR /app
-
-# Копируем зависимости и устанавливаем
-COPY pyproject.toml poetry.lock* ./
-RUN poetry install --no-root
-
-# Копируем остальной код в поддиректорию
-COPY . /app/src
+#
+## Копируем зависимости и устанавливаем
+#COPY pyproject.toml poetry.lock* ./
+#RUN poetry install --no-root
+#
+## Копируем остальной код в поддиректорию
+#COPY . /app
