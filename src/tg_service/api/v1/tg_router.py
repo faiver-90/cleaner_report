@@ -26,7 +26,7 @@ async def send_jwt(token: str):
             json=data
         )
         response_data = response.json()
-        raise HTTPException('jhkдh')
+
         logger.info(f"Token sent: {token}, response: {response_data}")
         return {"code_response": response_data.get("jwt")}
 
