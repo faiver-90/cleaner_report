@@ -1,11 +1,11 @@
 from fastapi import FastAPI
 
-from tg_router import router_main
+from api.v1.tg_router import v1
 
 
 def get_app() -> FastAPI:
     app = FastAPI()
-    app.include_router(router_main)
+    app.include_router(v1)
     return app
 
 

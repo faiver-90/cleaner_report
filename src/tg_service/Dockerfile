@@ -7,19 +7,23 @@ RUN apt-get update && apt-get install -y \
     python3-dev \
     curl
 
-# Poetry
-RUN pip install poetry
-
-ENV POETRY_NO_INTERACTION=1
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
-ENV PYTHONPATH=/app
-
-# Отключаем создание .venv
-RUN poetry config virtualenvs.create false
+## Poetry
+#RUN pip install poetry
+#
+#ENV POETRY_NO_INTERACTION=1
+#ENV PYTHONDONTWRITEBYTECODE=1
+#ENV PYTHONUNBUFFERED=1
+#ENV PYTHONPATH=/app
+#
+## Отключаем создание .venv
+#RUN poetry config virtualenvs.create false
 
 # Устанавливаем рабочую директорию
 WORKDIR /app
+COPY requirements.txt .
+
+RUN pip install --upgrade pip && \
+    pip install -r requirements.txt
 #
 ## Копируем зависимости и устанавливаем
 #COPY pyproject.toml poetry.lock* ./
