@@ -1,12 +1,15 @@
 from pydantic import BaseModel, EmailStr, Field
 
 
-class JWTCheckInSchema(BaseModel):
-    jwt_code: str | None = None
+# class JWTCheckInSchema(BaseModel):
+#     jwt_code: str | None = None
 
 
-class JWTCheckOutSchema(BaseModel):
-    result: bool
+# class JWTCheckOutSchema(BaseModel):
+#     result: bool
+class JWTCreateSchema(BaseModel):
+    user_id: int
+    token: str
 
 
 class AuthInSchema(BaseModel):
