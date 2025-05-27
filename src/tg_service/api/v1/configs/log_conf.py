@@ -38,6 +38,7 @@ business_logger.addHandler(business_handler)
 
 # (Не давать логгерам пробрасывать логи выше)
 business_logger.propagate = False
+errors_handler.propagate = False
 
 # Root logger
 root_logger = logging.getLogger()
