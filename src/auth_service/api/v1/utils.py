@@ -20,7 +20,7 @@ async def send_request(
                 json=json,
                 params=params,
                 headers=headers,
-                **kwargs  # ← всё дополнительное пойдёт сюда
+                **kwargs
             )
 
         if response.status_code >= 400:

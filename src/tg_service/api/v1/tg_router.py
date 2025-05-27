@@ -1,12 +1,12 @@
 import json
 import logging
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 
 from api.v1.utils import send_request
-import api.v1.configs.log_conf
 
 logger = logging.getLogger(__name__)
+business_logger = logging.getLogger('business')
 
 v1 = APIRouter()
 
@@ -14,6 +14,16 @@ v1 = APIRouter()
 @v1.get('/')
 async def test_connection():
     return {'It\'s': 'Work'}
+
+
+@v1.post('/auth/login')
+async def login():
+    pass
+
+
+@v1.post('/auth/refresh')
+async def refresh():
+    pass
 
 
 @v1.post("/send_jwt/{token:str}")
@@ -27,7 +37,7 @@ async def send_jwt(token: str):
         )
         response_data = response.json()
 
-        logger.info(f"Token sent: {token}, response: {response_data}")
+        business_logger.info(f"Token sent: {token}, response: {response_data}")
         return {"code_response": response_data.get("jwt")}
 
     except json.JSONDecodeError as e:

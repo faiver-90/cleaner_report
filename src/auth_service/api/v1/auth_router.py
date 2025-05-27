@@ -1,7 +1,7 @@
-from fastapi import APIRouter, Body
+from fastapi import APIRouter, Depends
 
-from api.v1.schemas import JWTInSchema
-import api.v1.configs.log_conf
+import jwt
+from api.v1.schemas import JWTCheckInSchema
 
 v1 = APIRouter()
 
@@ -12,6 +12,5 @@ async def test_connection():
 
 
 @v1.post('/check_jwt')
-async def check_jwt(data: JWTInSchema):
-    print(data.code)
-    return {'jwt': data.code}
+async def auth(data: JWTCheckInSchema):
+    return {'jwt': data.jwt_code}

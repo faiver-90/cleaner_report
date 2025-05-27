@@ -4,24 +4,47 @@ from logging.handlers import RotatingFileHandler
 
 os.makedirs("tg_logs", exist_ok=True)
 
-# Создаём обработчик с ротацией
-handler = RotatingFileHandler(
-    filename='tg_logs/logs.log',
-    maxBytes=10 * 1024 * 1024,  # 10 MB
-    backupCount=5
-)
+# Общий формат логов
+formatter = logging.Formatter("%(asctime)s "
+                              "[%(levelname)s] "
+                              "%(name)s:"
+                              " %(message)s")
 
-# Настройка формата логов
-formatter = logging.Formatter(
-    "%(asctime)s [%(levelname)s] %(name)s: %(message)s")
-handler.setFormatter(formatter)
+# 🔸 Handler для business логики
+business_handler = RotatingFileHandler("tg_logs/business.log",
+                                       maxBytes=5_000_000,
+                                       backupCount=3)
+business_handler.setLevel(logging.INFO)
+business_handler.setFormatter(formatter)
 
-# Базовая настройка логгера
-logging.basicConfig(
-    level=logging.DEBUG,
-    handlers=[handler]
-)
+# 🔸 Handler для ошибок
+errors_handler = RotatingFileHandler("tg_logs/errors.log",
+                                     maxBytes=5_000_000,
+                                     backupCount=3)
+errors_handler.setLevel(logging.ERROR)
+errors_handler.setFormatter(formatter)
 
+# Root обработчик
+root_handler = RotatingFileHandler("tg_logs/common.log",
+                                   maxBytes=5_000_000,
+                                   backupCount=3)
+root_handler.setLevel(logging.DEBUG)
+root_handler.setFormatter(formatter)
+
+# Логгер бизнес-логики
+business_logger = logging.getLogger("business")
+business_logger.setLevel(logging.INFO)
+business_logger.addHandler(business_handler)
+
+# (Не давать логгерам пробрасывать логи выше)
+business_logger.propagate = False
+
+# Root logger
+root_logger = logging.getLogger()
+root_logger.setLevel(logging.DEBUG)
+root_logger.addHandler(root_handler)
+
+# Отключаем спам от сторонних библиотек
 logging.getLogger("httpx").setLevel(logging.WARNING)
 logging.getLogger("httpcore").setLevel(logging.WARNING)
 logging.getLogger("uvicorn").setLevel(logging.INFO)
