@@ -15,4 +15,5 @@ class AuthInSchema(BaseModel):
 
 
 class AuthOutSchema(BaseModel):
-    token: str
+    access_token: str
+    refresh_token: str
