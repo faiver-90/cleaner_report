@@ -7,7 +7,7 @@ import os
 
 from alembic import context
 
-from db.base import Base
+from db import models
 
 load_dotenv()
 
@@ -23,7 +23,7 @@ if config.config_file_name is not None:
 # add your model's MetaData object here
 # for 'autogenerate' support
 # from myapp import mymodel
-target_metadata = Base.metadata
+target_metadata = models.Base.metadata
 
 # Устанавливаем sqlalchemy.url из переменной окружения
 database_url = os.getenv("SYNC_DATABASE_URL")

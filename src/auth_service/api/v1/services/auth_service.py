@@ -1,4 +1,3 @@
-
 from datetime import datetime, timedelta
 
 from jose import jwt
@@ -26,4 +25,3 @@ def create_refresh_token(user_id: str):
 def decode_token(token: str):
     payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
     return payload["sub"]
-
