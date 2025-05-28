@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError, HTTPException
 
 from api.v1.auth_router import v1
-from api.v1.configs import exceprions_conf
+from api.v1.services import stream_exceptions_handlers
 
 
 def get_app() -> FastAPI:
@@ -11,11 +11,11 @@ def get_app() -> FastAPI:
     app = FastAPI()
 
     app.add_exception_handler(RequestValidationError,
-                              exceprions_conf.validation_exception_handler)
+                              stream_exceptions_handlers.validation_exception_handler)
     app.add_exception_handler(HTTPException,
-                              exceprions_conf.http_exception_handler)
+                              stream_exceptions_handlers.http_exception_handler)
     app.add_exception_handler(Exception,
-                              exceprions_conf.generic_exception_handler)
+                              stream_exceptions_handlers.generic_exception_handler)
     app.include_router(v1)
     return app
 
