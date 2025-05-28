@@ -1,7 +1,7 @@
 import logging
 
 from api.v1.configs.crypt_conf import pwd_context
-from api.v1.schemas import JWTCreateSchema
+from api.v1.schemas import JWTCreateSchema, UserOutSchema, TokenResponseSchema
 from api.v1.services.jwt_service import create_access_token, \
     create_refresh_token
 from repositories.jwt_repo import JWTRepo
@@ -30,7 +30,17 @@ class AuthService:
         access = create_access_token(user.username)
         refresh = create_refresh_token(user.username)
 
-        await self.jwt_repo.create(JWTCreateSchema(user_id=user.id,
-                                                   token=refresh))
-
-        return {"access_token": access, "refresh_token": refresh}
+        jwt = await self.jwt_repo.create(JWTCreateSchema(user_id=user.id,
+                                                         token=refresh))
+        return TokenResponseSchema(
+            access_token=access,
+            refresh_token=refresh,
+            token_type="bearer",
+            expires_at=jwt.expires_at,
+            user=UserOutSchema(
+                id=user.id,
+                username=user.username,
+                email=user.email,
+                is_superuser=user.is_superuser
+            )
+        )

@@ -2,10 +2,8 @@ from datetime import datetime, timedelta
 
 from jose import jwt
 
-SECRET_KEY = "secret"
-ALGORITHM = "HS256"
-ACCESS_EXPIRE_MIN = 15
-REFRESH_EXPIRE_DAYS = 7
+from api.v1.configs.jwt_conf import SECRET_KEY, ALGORITHM, ACCESS_EXPIRE_MIN, \
+    REFRESH_EXPIRE_DAYS
 
 
 def create_token(data: dict, expires_delta: timedelta):

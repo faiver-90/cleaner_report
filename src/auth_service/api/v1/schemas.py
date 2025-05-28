@@ -1,12 +1,8 @@
+from datetime import datetime
+
 from pydantic import BaseModel, EmailStr, Field
 
 
-# class JWTCheckInSchema(BaseModel):
-#     jwt_code: str | None = None
-
-
-# class JWTCheckOutSchema(BaseModel):
-#     result: bool
 class JWTCreateSchema(BaseModel):
     user_id: int
     token: str
@@ -32,6 +28,15 @@ class UserOutSchema(BaseModel):
     id: int
     username: str
     email: EmailStr
+    is_superuser: bool
 
     class Config:
         orm_mode = True
+
+
+class TokenResponseSchema(BaseModel):
+    access_token: str
+    refresh_token: str
+    token_type: str = "bearer"
+    expires_at: datetime
+    user: UserOutSchema

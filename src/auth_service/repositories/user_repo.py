@@ -27,10 +27,10 @@ class UserRepository:
         result = await self.session.execute(stmt)
         return result.scalar()
 
-    async def update_user(self, user: User, data: dict):
+    async def update_user_by_id(self, user_id: int, data: dict):
         stmt = (
             update(User)
-            .where(User.id == user.id)
+            .where(User.id == user_id)
             .values(**data)
         )
         await self.session.execute(stmt)
