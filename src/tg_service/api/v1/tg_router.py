@@ -2,7 +2,9 @@ import logging
 
 from fastapi import APIRouter, HTTPException
 
-from api.v1.schemas import LoginInSchema, RegisterInSchema, RegisterOutSchema
+from api.v1.configs.exceptions_handlers import handle_internal_errors
+from api.v1.schemas import LoginInSchema, RegisterInSchema, RegisterOutSchema, \
+    TokenResponseSchema
 from api.v1.utils import send_request
 
 logger = logging.getLogger(__name__)
@@ -16,7 +18,8 @@ async def test_connection():
     return {'It\'s': 'Work'}
 
 
-@v1.post('/auth/login')
+@v1.post('/auth/login', response_model=TokenResponseSchema)
+@handle_internal_errors()
 async def login(data: LoginInSchema):
     payload = {
         'username': data.username,
@@ -32,14 +35,12 @@ async def login(data: LoginInSchema):
     )
 
     response_data = response.json()
-    access_token = response_data.get("access_token")
-
-    business_logger.info(f'User - {data.username}, get '
-                         f'access_token: {access_token}')
-    return {"access_token": access_token}
+    business_logger.info(f'Logi user - {response_data}')
+    return TokenResponseSchema.model_validate(response_data)
 
 
 @v1.post('/auth/register', response_model=RegisterOutSchema)
+@handle_internal_errors()
 async def register(data: RegisterInSchema):
     username = data.username
     email = data.email
@@ -83,5 +84,6 @@ async def register(data: RegisterInSchema):
 
 
 @v1.post('/auth/refresh')
+@handle_internal_errors()
 async def refresh():
     pass
