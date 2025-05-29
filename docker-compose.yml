@@ -11,12 +11,15 @@ services:
     depends_on:
       - auth_service
       #      - llm_service
-      - tg_service
 
   auth_service:
     container_name: auth
     build: ./src/auth_service
-    command: bash -c "pip install -r requirements.txt && uvicorn init_app:app --host 0.0.0.0 --port 8001 --reload"
+    command:  >
+      bash -c "
+      pip install --no-cache-dir -r requirements.txt && 
+      alembic upgrade head &&
+      uvicorn init_app:app --host 0.0.0.0 --port 8001 --reload"
     restart: always
     volumes:
       - ./src/auth_service:/app
@@ -31,6 +34,19 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
+
+  tg_bot:
+    container_name: tg_bot
+    build: ./src/tg_bot
+    command: bash -c "pip install -r requirements.txt && python main.py"
+    volumes:
+      - ./src/tg_bot:/app
+    env_file:
+      - ./src/tg_bot/.env
+    restart: always
+    depends_on:
+      - auth_service
+
 
 #    llm_service:
 #      container_name: llm
@@ -53,34 +69,15 @@ services:
 #          max-size: "10m"
 #          max-file: "3"
 
-  tg_service:
-    container_name: tg
-    build: ./src/tg_service
-    command: bash -c "pip install -r requirements.txt && uvicorn init_app:app --host 0.0.0.0 --port 8000 --reload"
-    restart: always
-    volumes:
-      - ./src/tg_service:/app
-    expose:
-      - "8003"
-    env_file:
-      - ./src/tg_service/.env
-#    depends_on:
-#      - db
-#      - redis
-    logging:
-      options:
-        max-size: "10m"
-        max-file: "3"
-
 #  celery-beat:
 #    container_name: tg_beat
 #    restart: unless-stopped
-#    build: ./src/tg_service/
+#    build: ./src/gateway_service/
 #    command: bash -c "
 #      poetry install --no-root &&
 #      poetry run celery -A _celery.celery_worker.celery_app beat -l info"
 #    volumes:
-#      - ./src/tg_service:/app
+#      - ./src/gateway_service:/app
 ##    depends_on:
 ##      - db
 ##      - redis
@@ -91,13 +88,13 @@ services:
 #
 #  celery-worker:
 #    container_name: tg_cel
-#    build: ./src/tg_service/
+#    build: ./src/gateway_service/
 #    restart: unless-stopped
 #    command: bash -c "
 #      poetry install --no-root &&
 #      poetry run celery -A _celery.celery_worker.celery_app beat -l info"
 #    volumes:
-#      - ./src/tg_service:/app
+#      - ./src/gateway_service:/app
 ##    depends_on:
 ##      - db
 ##      - redis
@@ -118,20 +115,20 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
-#
-#  redis:
-#    container_name: reddis
-#    image: redis:latest
-#    restart: always
-#    env_file:
-#      - .env
-#    ports:
-#      - "6379:6379"
-#    environment:
-#      - REDIS_PASSWORD=${REDIS_PASSWORD}
-#      - REDIS_PORT=6379
-#      - REDIS_DATABASES=16
-#
+
+  redis:
+    container_name: reddis
+    image: redis:latest
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - "6379:6379"
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - REDIS_PORT=6379
+      - REDIS_DATABASES=16
+
 #  rabbitmq:
 #    container_name: rabbit
 #    image: rabbitmq:3.10.7-management

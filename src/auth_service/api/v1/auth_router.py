@@ -4,6 +4,7 @@ from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi.responses import JSONResponse
 
+from api.v1.configs.redis_conf import redis_client
 from api.v1.schemas import AuthInSchema, UserOutSchema, UserCreateSchema, \
     TokenResponseSchema
 from api.v1.services.auth_service import AuthService
@@ -58,9 +59,13 @@ async def register(
     try:
 
         user = await service.register_user(data)
+        business_logger.info(f'User was register: {user.email}, '
+                             f'{user.username}, {user.id}')
 
         return user
     except ValueError as e:
+        business_logger.error(f"User already exist: {data.email}, "
+                              f"{data.username}")
         return JSONResponse(
             status_code=400,
             content={
