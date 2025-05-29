@@ -1,8 +1,8 @@
 import logging
 import os
 from logging.handlers import RotatingFileHandler
-
-os.makedirs("tg_logs", exist_ok=True)
+name_dir = "auth_logs"
+os.makedirs(name_dir, exist_ok=True)
 
 # Общий формат логов
 formatter = logging.Formatter("%(asctime)s "
@@ -11,21 +11,21 @@ formatter = logging.Formatter("%(asctime)s "
                               " %(message)s")
 
 # 🔸 Handler для business логики
-business_handler = RotatingFileHandler("tg_logs/business.log",
+business_handler = RotatingFileHandler(f"{name_dir}/business.log",
                                        maxBytes=5_000_000,
                                        backupCount=3)
 business_handler.setLevel(logging.INFO)
 business_handler.setFormatter(formatter)
 
 # 🔸 Handler для ошибок
-errors_handler = RotatingFileHandler("tg_logs/errors.log",
+errors_handler = RotatingFileHandler(f"{name_dir}/errors.log",
                                      maxBytes=5_000_000,
                                      backupCount=3)
 errors_handler.setLevel(logging.ERROR)
 errors_handler.setFormatter(formatter)
 
 # Root обработчик
-root_handler = RotatingFileHandler("tg_logs/common.log",
+root_handler = RotatingFileHandler(f"{name_dir}/common.log",
                                    maxBytes=5_000_000,
                                    backupCount=3)
 root_handler.setLevel(logging.DEBUG)
