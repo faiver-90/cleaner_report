@@ -20,7 +20,7 @@ class AuthService:
         self.user_repo = user_repo
         self.jwt_repo = jwt_repo
 
-    async def login(self, username: str, password: str):
+    async def login(self, username: str, password: str, chat_id: str):
         user = await self.user_repo.get_by_fields(username=username)
         if not user:
             logger.error(f'Invalid username or password. Username - '
@@ -35,9 +35,9 @@ class AuthService:
         access = create_access_token(user.username)
         refresh = create_refresh_token(user.username)
 
-        redis_name = f'auth:{user.id}'
+        redis_name = f'auth:{chat_id}'
         if redis_client.hget(redis_name, 'access_token'):
-            await redis_client.hset(f'auth:{user.id}',
+            await redis_client.hset(f'auth:{chat_id}',
                                     mapping={'access_token': access})
             await redis_client.expire(redis_name, 60 * ACCESS_EXPIRE_MIN)
 

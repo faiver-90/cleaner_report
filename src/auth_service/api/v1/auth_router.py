@@ -34,7 +34,9 @@ async def login(token_data: AuthInSchema,
 
     try:
         business_logger.info(f'Login request. Username - {username}')
-        token_data = await service.login(username, token_data.password)
+        token_data = await service.login(username,
+                                         token_data.password,
+                                         token_data.chat_id)
         business_logger.info(f'User was logged - {token_data.model_dump()}')
         return token_data
     except ValueError as e:

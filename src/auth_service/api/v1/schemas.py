@@ -11,6 +11,7 @@ class JWTCreateSchema(BaseModel):
 class AuthInSchema(BaseModel):
     password: str
     username: str
+    chat_id: str
 
 
 class AuthOutSchema(BaseModel):
