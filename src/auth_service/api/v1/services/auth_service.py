@@ -1,7 +1,10 @@
 import logging
 
 from api.v1.configs.crypt_conf import pwd_context
-from api.v1.schemas import JWTCreateSchema, UserOutSchema, TokenResponseSchema
+from api.v1.configs.jwt_conf import ACCESS_EXPIRE_MIN
+from api.v1.configs.redis_conf import redis_client
+from api.v1.schemas import JWTCreateSchema, UserOutSchema, TokenResponseSchema, \
+    UserCreateSchema
 from api.v1.services.jwt_service import create_access_token, \
     create_refresh_token
 from repositories.jwt_repo import JWTRepo
@@ -11,7 +14,9 @@ logger = logging.getLogger(__name__)
 
 
 class AuthService:
-    def __init__(self, user_repo: UserRepository, jwt_repo: JWTRepo):
+    def __init__(self,
+                 user_repo: UserRepository = None,
+                 jwt_repo: JWTRepo = None):
         self.user_repo = user_repo
         self.jwt_repo = jwt_repo
 
@@ -30,6 +35,12 @@ class AuthService:
         access = create_access_token(user.username)
         refresh = create_refresh_token(user.username)
 
+        redis_name = f'auth:{user.id}'
+        if redis_client.hget(redis_name, 'access_token'):
+            await redis_client.hset(f'auth:{user.id}',
+                                    mapping={'access_token': access})
+            await redis_client.expire(redis_name, 60 * ACCESS_EXPIRE_MIN)
+
         jwt = await self.jwt_repo.create(JWTCreateSchema(user_id=user.id,
                                                          token=refresh))
         return TokenResponseSchema(
@@ -44,3 +55,13 @@ class AuthService:
                 is_superuser=user.is_superuser
             )
         )
+
+    async def register_user(self, data: UserCreateSchema):
+        existing_user = await self.user_repo.exists_by_fields(
+            email=data.email,
+            username=data.username)
+        if existing_user:
+            raise ValueError("User with this email or username already exists")
+
+        hashed_password = pwd_context.hash(data.password)
+        return await self.user_repo.create(data, hashed_password)

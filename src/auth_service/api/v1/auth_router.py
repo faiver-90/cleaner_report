@@ -1,16 +1,14 @@
 import logging
 
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi.responses import JSONResponse
 
-from api.v1.configs.redis_conf import redis_client
 from api.v1.schemas import AuthInSchema, UserOutSchema, UserCreateSchema, \
     TokenResponseSchema
 from api.v1.services.auth_service import AuthService
 
 from api.v1.services.exceptions_handlers import handle_internal_errors
-from api.v1.services.user_service import UserService
 from db.session import get_async_session
 
 from repositories.jwt_repo import JWTRepo
@@ -37,7 +35,7 @@ async def login(token_data: AuthInSchema,
     try:
         business_logger.info(f'Login request. Username - {username}')
         token_data = await service.login(username, token_data.password)
-
+        business_logger.info(f'User was logged - {token_data.model_dump()}')
         return token_data
     except ValueError as e:
         logger.error(f'Invalid credentials. Username - {username}')
@@ -55,7 +53,7 @@ async def login(token_data: AuthInSchema,
 async def register(
         data: UserCreateSchema,
         db: AsyncSession = Depends(get_async_session)):
-    service = UserService(UserRepository(db))
+    service = AuthService(UserRepository(db))
     try:
 
         user = await service.register_user(data)
