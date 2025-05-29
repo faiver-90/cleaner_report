@@ -137,7 +137,7 @@ services:
 #    image: rabbitmq:3.10.7-management
 #    ports:
 #      - "5672:5672"     # ← AMQP для Celery и других клиентов
-#      - "15672:15672"   # ← Web UI
+#      - "15672:15672"   # ← Web UI 8777
 
 
 volumes:
