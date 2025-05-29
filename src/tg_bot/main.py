@@ -7,7 +7,7 @@ from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.types import Message
 from dotenv import load_dotenv
 
-from handlers import register
+from handlers import register, login
 
 load_dotenv()
 
@@ -18,6 +18,7 @@ async def main():
     bot = Bot(token=TOKEN)
     dp = Dispatcher(storage=MemoryStorage())
     dp.include_router(register.router)
+    dp.include_router(login.router)
 
     @dp.message(CommandStart())
     async def handle_start(msg: Message):

@@ -9,6 +9,7 @@ from api.v1.schemas import AuthInSchema, UserOutSchema, UserCreateSchema, \
 from api.v1.services.auth_service import AuthService
 
 from api.v1.services.exceptions_handlers import handle_internal_errors
+from api.v1.services.redis_service import RedisService
 from db.session import get_async_session
 
 from repositories.jwt_repo import JWTRepo
@@ -29,7 +30,10 @@ async def test_connection():
 @handle_internal_errors()
 async def login(token_data: AuthInSchema,
                 db: AsyncSession = Depends(get_async_session)):
-    service = AuthService(UserRepository(db), JWTRepo(db))
+    service = AuthService(UserRepository(db),
+                          JWTRepo(db),
+                          RedisService(host='redis'))
+
     username = token_data.username
 
     try:
