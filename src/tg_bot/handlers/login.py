@@ -37,15 +37,14 @@ async def login_password(msg: Message, state: FSMContext):
         password=password,
         chat_id=chat_id
     )
-
     if status == 200:
-        await state.update_data(token=result["access_token"])
+        await state.update_data(access_token=result["access_token"])
         data = await state.get_data()
-        token = data.get("token")
+
         await msg.answer(f"Добро пожаловать, {result['user']['username']}!")
-        await msg.answer(f"Ваш токен в памяти, {token}!")
+        await state.set_state(None)
     else:
         await msg.answer(f"Ошибка входа: "
                          f"{result.get('message', 'неизвестно')}")
 
-    await state.clear()
+        await state.clear()

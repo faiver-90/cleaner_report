@@ -3,26 +3,27 @@ import os
 
 from aiogram import Bot, Dispatcher
 from aiogram.filters import CommandStart
-from aiogram.fsm.storage.memory import MemoryStorage
+from aiogram.fsm.storage.redis import RedisStorage
 from aiogram.types import Message, BotCommand
 from dotenv import load_dotenv
 
-from handlers import register, login
+from routers import main_router
 
 load_dotenv()
 
 TOKEN = os.getenv('TG_TOKEN')
+storage = RedisStorage.from_url("redis://redis:6379")
 
 
 async def main():
     bot = Bot(token=TOKEN)
-    dp = Dispatcher(storage=MemoryStorage())
-    dp.include_router(register.router)
-    dp.include_router(login.router)
+    dp = Dispatcher(storage=storage)
+    dp.include_router(main_router)
 
     commands = [
         BotCommand(command="/login", description="Войти в систему"),
-        BotCommand(command="/register", description="Зарегистрироваться"),
+        BotCommand(command="/register", description="Регистрация"),
+        BotCommand(command="/send_photo", description="Отправить фото"),
     ]
     await bot.set_my_commands(commands)
 
