@@ -47,27 +47,27 @@ services:
     depends_on:
       - auth_service
 
-
-#    llm_service:
-#      container_name: llm
-#      build: ./src/llm_service
-#      command: bash -c "
-#        poetry install --no-root &&
-#        poetry run uvicorn init_app:app --host 0.0.0.0 --port 8002 --reload"
-#      restart: always
-#      volumes:
-#        - ./src/llm_service:/app/src
-#      expose:
-#        - "8002"
-#      env_file:
-#        - ./src/llm_service/.env
-#      depends_on:
-#        - db
-#        - redis
-#      logging:
-#        options:
-#          max-size: "10m"
-#          max-file: "3"
+  llm_service:
+    container_name: llm
+    build: ./src/llm_service
+    command: >
+      bash -c "
+      pip install --no-cache-dir -r requirements.txt && 
+      uvicorn init_app:app --host 0.0.0.0 --port 8002 --reload"
+    restart: always
+    volumes:
+      - ./src/llm_service:/app
+    ports:
+      - "8002:8002"
+    env_file:
+      - ./src/llm_service/.env
+    depends_on:
+      - db
+      - redis
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
 
 #  celery-beat:
 #    container_name: tg_beat
