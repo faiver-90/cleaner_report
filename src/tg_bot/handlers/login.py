@@ -39,7 +39,6 @@ async def login_password(msg: Message, state: FSMContext):
     )
     if status == 200:
         await state.update_data(access_token=result["access_token"])
-        data = await state.get_data()
 
         await msg.answer(f"Добро пожаловать, {result['user']['username']}!")
         await state.set_state(None)
