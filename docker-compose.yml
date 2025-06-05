@@ -10,7 +10,7 @@ services:
       - "8000:80"
     depends_on:
       - auth_service
-      #      - llm_service
+      - llm_service
 
   auth_service:
     container_name: auth
@@ -27,9 +27,9 @@ services:
       - "8001"
     env_file:
       - ./src/auth_service/.env
-#      depends_on:
-#        - db
-#        - redis
+    depends_on:
+      - db
+      - redis
     logging:
       options:
         max-size: "10m"
