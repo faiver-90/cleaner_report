@@ -10,6 +10,7 @@ from api.v1.services.auth_service import AuthService
 
 from api.v1.services.exceptions_handlers import handle_internal_errors
 from api.v1.services.redis_service import RedisService
+from api.v1.utils import send_request
 from db.session import get_async_session
 
 from repositories.jwt_repo import JWTRepo
@@ -19,6 +20,8 @@ v1 = APIRouter()
 
 logger = logging.getLogger(__name__)
 business_logger = logging.getLogger('business')
+
+BASE_URL = "http://llm_service:8002"
 
 
 @v1.get('/')
