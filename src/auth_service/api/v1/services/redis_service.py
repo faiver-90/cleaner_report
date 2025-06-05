@@ -9,7 +9,8 @@ class RedisService:
                                   decode_responses=True)
 
     async def save_auth_token(self, chat_id: int, token: str, ttl: int = 3600):
-        await self.client.hset(f"auth:{chat_id}", {"access_token": token})
+        await self.client.hset(f"auth:{chat_id}",
+                               mapping={"access_token": token})
         await self.client.expire(f"auth:{chat_id}", ttl)
 
     async def get_auth_token(self, chat_id: int) -> str | None:

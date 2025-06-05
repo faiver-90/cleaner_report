@@ -4,7 +4,7 @@ import os
 from aiogram import Bot, Dispatcher
 from aiogram.filters import CommandStart
 from aiogram.fsm.storage.memory import MemoryStorage
-from aiogram.types import Message
+from aiogram.types import Message, BotCommand
 from dotenv import load_dotenv
 
 from handlers import register, login
@@ -19,6 +19,12 @@ async def main():
     dp = Dispatcher(storage=MemoryStorage())
     dp.include_router(register.router)
     dp.include_router(login.router)
+
+    commands = [
+        BotCommand(command="/login", description="Войти в систему"),
+        BotCommand(command="/register", description="Зарегистрироваться"),
+    ]
+    await bot.set_my_commands(commands)
 
     @dp.message(CommandStart())
     async def handle_start(msg: Message):

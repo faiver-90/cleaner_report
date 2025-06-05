@@ -1,12 +1,14 @@
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy import String
 from datetime import datetime
+from sqlalchemy import ForeignKey
 
 from db.base import Base
 
 
 class User(Base):
     __tablename__ = "users"
+    # __table_args__ = {"schema": "auth"}
 
     id: Mapped[int] = mapped_column(primary_key=True)
     username: Mapped[str] = mapped_column(String(150),
@@ -24,9 +26,10 @@ class User(Base):
 
 class RefreshToken(Base):
     __tablename__ = "refresh_tokens"
+    # __table_args__ = {"schema": "auth"}
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    user_id: Mapped[int] = mapped_column(foreign_key="users.id")
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     token: Mapped[str] = mapped_column(nullable=False)
     created_at: Mapped[datetime] = mapped_column(default=datetime.utcnow)
     expires_at: Mapped[datetime]
